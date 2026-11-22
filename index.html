@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beat the Clock: Periodic Table Do Now</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eaf0f5; --surface:#ffffff; --surface-2:#f4f7fa; --ink:#14233a; --muted:#56657a; --line:#cdd8e3;
+  --primary:#2b59c3; --primary-ink:#ffffff; --flame:#f2b632; --flame-ink:#2a1d00;
+  --good:#1a8f60; --good-soft:#dcf3e9; --bad:#cc3d3d; --bad-soft:#fbe3e3;
+  --cell:#d6e0ea; --atomA:#2b59c3; --atomB:#f2b632; --atom-line:#14233a;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1828; --surface:#16233a; --surface-2:#1c2c47; --ink:#e7eef7; --muted:#9fb0c6; --line:#2b3d5c;
+    --primary:#6d93f0; --primary-ink:#0b1424; --flame:#f5c451; --flame-ink:#2a1d00;
+    --good:#4cc996; --good-soft:#143a2d; --bad:#f07a7a; --bad-soft:#3d1c22;
+    --cell:#263856; --atomA:#6d93f0; --atomB:#f5c451; --atom-line:#e7eef7;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1828; --surface:#16233a; --surface-2:#1c2c47; --ink:#e7eef7; --muted:#9fb0c6; --line:#2b3d5c;
+  --primary:#6d93f0; --primary-ink:#0b1424; --flame:#f5c451; --flame-ink:#2a1d00;
+  --good:#4cc996; --good-soft:#143a2d; --bad:#f07a7a; --bad-soft:#3d1c22;
+  --cell:#263856; --atomA:#6d93f0; --atomB:#f5c451; --atom-line:#e7eef7;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Atkinson Hyperlegible", "Segoe UI", Roboto, Arial, sans-serif;
+  font-size:clamp(17px, 1.1vw + 12px, 22px); line-height:1.45;
+  min-height:100%;
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--flame);outline-offset:3px}
+
+.wrap{max-width:980px;margin:0 auto;padding:clamp(14px,3vw,32px)}
+
+/* Title built from element tiles */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:clamp(16px,3vw,28px)}
+.title{display:flex;align-items:flex-end;gap:6px;flex-wrap:wrap;margin:0;font-weight:inherit}
+.tile{
+  width:2.3em;height:2.5em;border:2px solid var(--ink);border-radius:4px;background:var(--surface);
+  display:flex;flex-direction:column;justify-content:space-between;padding:3px 5px;
+  font-family:"Bricolage Grotesque", "Arial Black", sans-serif;line-height:1;
+}
+.tile small{font-size:.42em;font-weight:500;color:var(--muted)}
+.tile b{font-size:1.05em;font-weight:800;align-self:center;margin-bottom:6px}
+.tile.flame{background:var(--flame);color:var(--flame-ink);border-color:var(--flame-ink)}
+.tile.flame small{color:var(--flame-ink)}
+.word{font-family:"Bricolage Grotesque", "Arial Black", sans-serif;font-weight:700;font-size:1.1em;padding:0 4px 4px}
+.gap{width:6px}
+
+.hud{display:flex;gap:10px;align-items:stretch}
+.chip{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:6px 14px;text-align:center;min-width:5.2em}
+.chip span{display:block;font-size:.62em;color:var(--muted)}
+.chip strong{font-family:"Bricolage Grotesque", "Arial Black", sans-serif;font-size:1.45em;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.chip.warn{border-color:var(--bad)}
+.chip.warn strong{color:var(--bad)}
+
+.card{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:clamp(18px,3.5vw,36px)}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;color:var(--muted);font-size:.8em}
+.topic{background:var(--surface-2);border-radius:999px;padding:3px 12px}
+.prompt{font-family:"Bricolage Grotesque", "Arial Black", sans-serif;font-weight:700;font-size:clamp(1.3em,2.4vw + .5em,1.9em);line-height:1.15;margin:0 0 18px;max-width:30ch}
+
+.visual{margin:0 0 22px}
+.ptable-scroll{overflow-x:auto}
+.ptable{display:grid;grid-template-columns:repeat(18,minmax(14px,1fr));gap:3px;max-width:560px;min-width:290px}
+.ptable div{aspect-ratio:1;border-radius:3px}
+.ptable .c{background:var(--cell)}
+.ptable .h{background:var(--flame);box-shadow:inset 0 0 0 2px var(--flame-ink)}
+.ptable-key{font-size:.75em;color:var(--muted);margin-top:8px}
+
+.particles{width:min(320px,100%);height:auto;display:block;background:var(--surface-2);border:2px solid var(--line);border-radius:12px}
+.particles .a{fill:var(--atomA);stroke:var(--atom-line);stroke-width:1.5}
+.particles .b{fill:var(--atomB);stroke:var(--atom-line);stroke-width:1.5}
+
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.opt{
+  display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;
+  background:var(--surface-2);border:2px solid var(--line);border-radius:12px;padding:14px 16px;font-weight:700;
+}
+.opt:hover:not(:disabled){border-color:var(--primary)}
+.opt .k{flex:none;width:1.8em;height:1.8em;border-radius:6px;background:var(--surface);border:2px solid var(--line);display:grid;place-items:center;font-size:.8em;color:var(--muted)}
+.opt:disabled{cursor:default}
+.opt.correct{background:var(--good-soft);border-color:var(--good)}
+.opt.correct .k{background:var(--good);border-color:var(--good);color:var(--surface)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.opt.faded{opacity:.55}
+
+.feedback{margin-top:18px;padding:14px 16px;border-radius:12px;background:var(--surface-2);border-left:6px solid var(--primary)}
+.feedback.good{border-left-color:var(--good)}
+.feedback.bad{border-left-color:var(--bad)}
+.feedback strong{display:block;font-family:"Bricolage Grotesque", "Arial Black", sans-serif;font-size:1.1em}
+
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:12px 22px;font-weight:700;cursor:pointer;background:var(--primary);color:var(--primary-ink)}
+.btn.ghost{background:transparent;color:var(--muted);border:2px solid var(--line)}
+.hint{font-size:.72em;color:var(--muted)}
+
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots i{width:12px;height:12px;border-radius:3px;background:var(--cell);display:block}
+.dots i.now{background:var(--primary)}
+.dots i.g{background:var(--good)}
+.dots i.x{background:var(--bad)}
+
+.intro p{max-width:58ch;margin:0 0 12px}
+.intro ul{margin:0 0 20px;padding-left:1.2em;max-width:58ch}
+.big{font-family:"Bricolage Grotesque", "Arial Black", sans-serif;font-weight:800;font-size:clamp(2.6em,8vw,4.4em);line-height:1;margin:6px 0 12px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--bad);color:#fff;font-weight:700;padding:12px 22px;border-radius:12px;display:none}
+.toast.show{display:block}
+[hidden]{display:none !important}
+@media (prefers-reduced-motion: no-preference){
+  .opt,.btn{transition:border-color .15s, background-color .15s}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1 class="title" aria-label="Beat the Clock">
+      <span class="tile" aria-hidden="true"><small>4</small><b>Be</b></span>
+      <span class="tile" aria-hidden="true"><small>85</small><b>At</b></span>
+      <span class="word" aria-hidden="true">the</span>
+      <span class="tile flame" aria-hidden="true"><small>17</small><b>Cl</b></span>
+      <span class="tile flame" aria-hidden="true"><small>8</small><b>O</b></span>
+      <span class="tile flame" aria-hidden="true"><small>6</small><b>C</b></span>
+      <span class="tile flame" aria-hidden="true"><small>19</small><b>K</b></span>
+    </h1>
+    <div class="hud">
+      <div class="chip" id="timerChip"><span>Time left</span><strong id="timer">5:00</strong></div>
+      <div class="chip"><span>Score</span><strong id="score">0</strong></div>
+    </div>
+  </div>
+
+  <!-- Start screen -->
+  <section class="card intro" id="intro">
+    <p class="big">5 minutes. 11 questions.</p>
+    <p>Retrieval from Lesson 2 and LF1: groups and periods, atomic number, where metals and non-metals sit, and spotting elements in particle diagrams.</p>
+    <ul>
+      <li>Write your answer on your whiteboard before the answer is revealed.</li>
+      <li>Keys 1–4 pick an answer, R reveals it, and Enter moves to the next question.</li>
+    </ul>
+    <button class="btn" id="startBtn">Start the clock</button>
+  </section>
+
+  <!-- Question screen -->
+  <section class="card" id="game" hidden>
+    <div class="meta">
+      <span class="topic" id="topic"></span>
+      <span id="count"></span>
+    </div>
+    <h2 class="prompt" id="prompt"></h2>
+    <div class="visual" id="visual"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback" hidden aria-live="polite"></div>
+    <div class="actions">
+      <div class="dots" id="dots" aria-hidden="true"></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn ghost" id="revealBtn">Reveal answer</button>
+        <button class="btn" id="nextBtn" hidden>Next question</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- End screen -->
+  <section class="card intro" id="end" hidden>
+    <p class="hint">Final score</p>
+    <p class="big" id="finalScore"></p>
+    <p id="finalMsg"></p>
+    <p id="reviewList" class="hint"></p>
+    <button class="btn" id="againBtn">Play again</button>
+  </section>
+</div>
+<div class="toast" id="toast" role="status">Time’s up! Finish the question you’re on.</div>
+
+<script>
+const QUESTIONS = [
+  {topic:"Groups and periods", prompt:"Is the highlighted strip a group or a period?",
+   visual:{kind:"table", hl:{type:"col", g:2}}, options:["Group","Period"], answer:0,
+   why:"Groups are the vertical columns. Elements in the same group have similar properties."},
+  {topic:"Groups and periods", prompt:"Is the highlighted strip a group or a period?",
+   visual:{kind:"table", hl:{type:"row", p:4}}, options:["Group","Period"], answer:1,
+   why:"Periods are the horizontal rows going across the table."},
+  {topic:"Atomic number", prompt:"Elements in the periodic table are arranged in order of increasing…",
+   options:["Atomic number","Atomic mass","Date of discovery","Alphabetical name"], answer:0,
+   why:"The atomic number goes up by one each time you move one place along the table."},
+  {topic:"Atomic number", prompt:"Magnesium has atomic number 12. What is the atomic number of the next element along?",
+   options:["11","13","14","24"], answer:1,
+   why:"Atomic number goes up by one each step, so the next element (aluminium) is 13."},
+  {topic:"Atomic number", prompt:"Element X has atomic number 9. Element Y has atomic number 7. Which comes first in the table?",
+   options:["Element X","Element Y","They’re in the same place","You can’t tell"], answer:1,
+   why:"Lower atomic numbers come first, so Y (7) comes before X (9)."},
+  {topic:"Metals and non-metals", prompt:"Is the highlighted element a metal or a non-metal?",
+   visual:{kind:"table", hl:{type:"cell", p:3, g:1}}, options:["Metal","Non-metal"], answer:0,
+   why:"It’s on the far left (sodium). Metals are found on the left and in the centre."},
+  {topic:"Metals and non-metals", prompt:"Is the highlighted element a metal or a non-metal?",
+   visual:{kind:"table", hl:{type:"cell", p:3, g:17}}, options:["Metal","Non-metal"], answer:1,
+   why:"It’s on the right-hand side (chlorine). Non-metals are found on the right."},
+  {topic:"Metals and non-metals", prompt:"Is the highlighted element a metal or a non-metal?",
+   visual:{kind:"table", hl:{type:"cell", p:4, g:8}}, options:["Metal","Non-metal"], answer:0,
+   why:"It’s in the centre block (iron). The centre of the table is full of metals too."},
+  {topic:"Particle diagrams", prompt:"Is this particle diagram an element?",
+   visual:{kind:"particles", d:"single"}, options:["Yes, it’s an element","No, it’s not an element"], answer:0,
+   why:"Every particle is the same type of atom, so it’s an element."},
+  {topic:"Particle diagrams", prompt:"Is this particle diagram an element?",
+   visual:{kind:"particles", d:"compound"}, options:["Yes, it’s an element","No, it’s not an element"], answer:1,
+   why:"Each particle has two different types of atom bonded together. That’s a compound, not an element."},
+  {topic:"Particle diagrams", prompt:"Is this particle diagram an element?",
+   visual:{kind:"particles", d:"diatomic"}, options:["Yes, it’s an element","No, it’s not an element"], answer:0,
+   why:"Tricky one! The atoms are joined in pairs, but every atom is the same type, so it’s still an element (like oxygen gas, O₂)."}
+];
+
+const $ = id => document.getElementById(id);
+const TOTAL_SECONDS = 300;
+let idx = 0, score = 0, revealed = false, results = [], secondsLeft = TOTAL_SECONDS, timerId = null;
+
+/* ---------- visuals ---------- */
+function cellExists(p, g){
+  if (p === 1) return g === 1 || g === 18;
+  if (p <= 3) return g <= 2 || g >= 13;
+  return true;
+}
+function renderTable(hl){
+  let html = '<div class="ptable-scroll"><div class="ptable" role="img" aria-label="Outline of the periodic table with one part highlighted">';
+  for (let p = 1; p <= 7; p++){
+    for (let g = 1; g <= 18; g++){
+      if (!cellExists(p, g)) { html += '<div></div>'; continue; }
+      const on = (hl.type === "col" && hl.g === g) || (hl.type === "row" && hl.p === p) ||
+                 (hl.type === "cell" && hl.p === p && hl.g === g);
+      html += `<div class="${on ? "h" : "c"}"></div>`;
+    }
+  }
+  return html + '</div></div><p class="ptable-key">Outline of the periodic table (main blocks only).</p>';
+}
+
+function circle(x, y, r, cls){ return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" class="${cls}"/>`; }
+function pair(x, y, deg, rA, clsA, rB, clsB){
+  const t = deg * Math.PI / 180, d = (rA + rB) * 0.82 / 2;
+  const dx = Math.cos(t) * d, dy = Math.sin(t) * d;
+  return circle(x - dx, y - dy, rA, clsA) + circle(x + dx, y + dy, rB, clsB);
+}
+function renderParticles(kind){
+  let s = "";
+  if (kind === "single"){
+    [[50,45],[125,40],[195,55],[75,110],[150,105],[205,132],[38,140]].forEach(([x,y]) => s += circle(x, y, 14, "a"));
+  } else {
+    const sites = [[58,45],[152,40],[102,100],[195,112],[48,135]], angles = [0,30,-20,60,15];
+    sites.forEach(([x,y], i) => {
+      s += kind === "diatomic" ? pair(x, y, angles[i], 13, "a", 13, "a")
+                               : pair(x, y, angles[i], 14, "a", 9, "b");
+    });
+  }
+  return `<svg class="particles" viewBox="0 0 240 170" role="img" aria-label="Particle diagram">${s}</svg>`;
+}
+
+/* ---------- game flow ---------- */
+function fmt(sec){ return Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0"); }
+function tick(){
+  secondsLeft = Math.max(0, secondsLeft - 1);
+  $("timer").textContent = fmt(secondsLeft);
+  $("timerChip").classList.toggle("warn", secondsLeft <= 30);
+  if (secondsLeft === 0){
+    clearInterval(timerId); timerId = null;
+    $("toast").classList.add("show");
+    setTimeout(() => $("toast").classList.remove("show"), 4000);
+  }
+}
+
+function start(){
+  idx = 0; score = 0; results = []; secondsLeft = TOTAL_SECONDS;
+  $("score").textContent = "0"; $("timer").textContent = fmt(secondsLeft);
+  $("timerChip").classList.remove("warn");
+  $("intro").hidden = true; $("end").hidden = true; $("game").hidden = false;
+  clearInterval(timerId); timerId = setInterval(tick, 1000);
+  show();
+}
+
+function show(){
+  const q = QUESTIONS[idx];
+  revealed = false;
+  $("topic").textContent = q.topic;
+  $("count").textContent = `Question ${idx + 1} of ${QUESTIONS.length}`;
+  $("prompt").textContent = q.prompt;
+  const v = $("visual");
+  if (!q.visual){ v.innerHTML = ""; v.hidden = true; }
+  else { v.hidden = false; v.innerHTML = q.visual.kind === "table" ? renderTable(q.visual.hl) : renderParticles(q.visual.d); }
+  $("options").innerHTML = q.options.map((o, i) =>
+    `<button class="opt" data-i="${i}"><span class="k">${i + 1}</span><span>${o}</span></button>`).join("");
+  $("options").querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => choose(+b.dataset.i)));
+  $("feedback").hidden = true;
+  $("nextBtn").hidden = true; $("revealBtn").hidden = false;
+  $("nextBtn").textContent = idx === QUESTIONS.length - 1 ? "See final score" : "Next question";
+  drawDots();
+  $("options").querySelector(".opt").focus({preventScroll:true});
+}
+
+function drawDots(){
+  $("dots").innerHTML = QUESTIONS.map((_, i) => {
+    const r = results[i];
+    return `<i class="${r === true ? "g" : r === false ? "x" : i === idx ? "now" : ""}"></i>`;
+  }).join("");
+}
+
+function choose(i){ if (!revealed) reveal(i); }
+
+function reveal(picked){
+  revealed = true;
+  const q = QUESTIONS[idx];
+  const scored = picked !== undefined;
+  const right = scored && picked === q.answer;
+  if (scored){ results[idx] = right; if (right) score++; }
+  $("score").textContent = score;
+  $("options").querySelectorAll(".opt").forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.answer) b.classList.add("correct");
+    else if (i === picked) b.classList.add("wrong");
+    else b.classList.add("faded");
+  });
+  const fb = $("feedback");
+  fb.className = "feedback" + (scored ? (right ? " good" : " bad") : "");
+  const head = !scored ? "Answer: " + q.options[q.answer] : right ? "Correct!" : "Not quite. It’s " + q.options[q.answer] + ".";
+  fb.innerHTML = `<strong>${head}</strong>${q.why}`;
+  fb.hidden = false;
+  $("revealBtn").hidden = true; $("nextBtn").hidden = false;
+  drawDots();
+  $("nextBtn").focus({preventScroll:true});
+}
+
+function next(){
+  if (idx < QUESTIONS.length - 1){ idx++; show(); }
+  else finish();
+}
+
+function finish(){
+  clearInterval(timerId); timerId = null;
+  $("game").hidden = true; $("end").hidden = false;
+  const answered = results.filter(r => r !== undefined).length;
+  $("finalScore").textContent = `${score} / ${QUESTIONS.length}`;
+  const pct = score / QUESTIONS.length;
+  $("finalMsg").textContent = pct >= 0.9 ? "Excellent recall. You’re ready for today’s lesson."
+    : pct >= 0.6 ? "Solid work. Check the ones you missed before we move on."
+    : "Some gaps to close. We’ll revisit these ideas in today’s lesson.";
+  const missed = QUESTIONS.map((q, i) => results[i] === false ? q.topic : null).filter(Boolean);
+  const topics = [...new Set(missed)];
+  $("reviewList").textContent = topics.length ? "Topics to review: " + topics.join(", ") + "."
+    : answered < QUESTIONS.length ? "Some answers were revealed without scoring." : "";
+}
+
+$("startBtn").addEventListener("click", start);
+$("againBtn").addEventListener("click", start);
+$("revealBtn").addEventListener("click", () => { if (!revealed) reveal(); });
+$("nextBtn").addEventListener("click", next);
+
+document.addEventListener("keydown", e => {
+  if ($("game").hidden) return;
+  if (!revealed){
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= QUESTIONS[idx].options.length){ e.preventDefault(); choose(n - 1); }
+    else if (e.key === "r" || e.key === "R"){ e.preventDefault(); reveal(); }
+  } else if (e.key === "Enter" || e.key === "ArrowRight"){
+    e.preventDefault(); next();
+  }
+});
+</script>
+</body>
+</html>
