@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Starter- Do Now: Escape the Lab</title>
+<style>
+:root {
+  --bg: #FEF6E4; --ink: #000000; --title: #264653; --red: #D00000; --answer: #00B050; --card: #FFFFFF; --edge: #000000; --muted: #4A4A4A; --chip: #F1E6CC;
+  --lock: #264653; --open: #00B050; --slot: #FFFFFF; --wrong: #C1121F; --hint: #FFF2CC;
+  box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; --bg: #1C2326; --ink: #F3F3F3; --title: #9FD3E0; --red: #FF6B6B; --answer: #48D597; --card: #2A3337; --edge: #C9C9C9; --muted: #BDBDBD; --chip: #34403F; --lock: #9FD3E0; --open: #48D597; --slot: #2A3337; --wrong: #FF8A8A; --hint: #3E3A26; }
+}
+:root[data-theme="dark"] { color-scheme: dark; --bg: #1C2326; --ink: #F3F3F3; --title: #9FD3E0; --red: #FF6B6B; --answer: #48D597; --card: #2A3337; --edge: #C9C9C9; --muted: #BDBDBD; --chip: #34403F; --lock: #9FD3E0; --open: #48D597; --slot: #2A3337; --wrong: #FF8A8A; --hint: #3E3A26; }
+*, *::before, *::after { box-sizing: inherit; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; display: flex; flex-direction: column; }
+header { display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1.2rem 0; }
+header img { width: clamp(52px, 6vw, 84px); height: auto; border-radius: 8px; }
+h1 { font-weight: 400; color: var(--title); font-size: clamp(2rem, 5.2vw, 4.6rem); margin: 0; line-height: 1.05; }
+.sub { margin-left: auto; text-align: right; color: var(--title); font-weight: 700; font-size: clamp(1.1rem, 2.2vw, 1.8rem); }
+.sub span { display: block; color: var(--muted); font-weight: 400; font-size: clamp(0.9rem, 1.5vw, 1.2rem); }
+.vault { display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1.2rem 0; flex-wrap: wrap; }
+.vault .lbl { font-size: clamp(1.1rem, 2.2vw, 1.9rem); font-weight: 700; color: var(--title); }
+.slots { display: flex; gap: 0.6rem; }
+.slots span { width: clamp(3rem, 6vw, 5rem); height: clamp(3.6rem, 7vw, 6rem); display: grid; place-items: center; font-size: clamp(2rem, 4.6vw, 4rem); font-weight: 700; background: var(--slot); border: 4px solid var(--edge); border-radius: 12px; font-variant-numeric: tabular-nums; }
+.slots span.got { border-color: var(--open); color: var(--open); }
+.clock { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
+.clock .t { font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 700; color: var(--title); font-variant-numeric: tabular-nums; }
+.clock.done .t { color: var(--red); }
+main { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 1rem 1.2rem 0.6rem; min-height: 0; }
+.lockcard { font: inherit; color: var(--ink); background: var(--card); border: 4px solid var(--edge); border-radius: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; padding: 0.8rem; text-align: center; }
+.lockcard svg { width: clamp(70px, 9vw, 130px); height: auto; }
+.lockcard .n { font-size: clamp(1.3rem, 2.6vw, 2.2rem); font-weight: 700; }
+.lockcard .topic { font-size: clamp(1rem, 1.8vw, 1.5rem); color: var(--muted); }
+.lockcard.solved { border-color: var(--open); }
+.lockcard.solved .n { color: var(--open); }
+.instr { color: var(--red); font-weight: 700; text-align: center; font-size: clamp(1rem, 2vw, 1.7rem); padding: 0.2rem 1rem 0.4rem; }
+footer { display: flex; align-items: center; justify-content: flex-end; padding: 0 1.2rem 0.7rem; gap: 0.8rem; }
+footer img { width: 54px; height: auto; }
+button { font: inherit; cursor: pointer; background: var(--card); color: var(--ink); border: 3px solid var(--edge); border-radius: 10px; padding: 0.35rem 0.8rem; }
+button:focus-visible { outline: 4px solid var(--red); outline-offset: 2px; }
+.p { position: fixed; inset: 0; background: var(--bg); display: none; flex-direction: column; padding: calc(0.8rem + env(safe-area-inset-top, 0px)) 1.4rem calc(0.8rem + env(safe-area-inset-bottom, 0px)); z-index: 5; }
+.p.open { display: flex; }
+.phead { display: flex; align-items: center; gap: 1rem; }
+.phead .badge { font-weight: 700; font-size: clamp(1.2rem, 2.4vw, 2rem); color: var(--title); }
+.phead .topic { color: var(--muted); font-size: clamp(1rem, 1.8vw, 1.5rem); }
+.pbody { flex: 1; display: grid; grid-template-columns: 1fr minmax(260px, 30%); gap: 1.4rem; margin-top: 0.6rem; min-height: 0; }
+.ptext { font-size: clamp(1.7rem, 4vw, 3.4rem); line-height: 1.22; margin: 0.3rem 0 0.8rem; max-width: 30ch; }
+.items { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: 0.8rem; }
+.items span { font-size: clamp(1.4rem, 3.2vw, 2.7rem); background: var(--card); border: 4px solid var(--edge); border-radius: 12px; padding: 0.3rem 1rem; }
+.feedback { font-size: clamp(1.2rem, 2.4vw, 2rem); min-height: 2.6em; line-height: 1.3; }
+.feedback.ok { color: var(--answer); } .feedback.no { color: var(--wrong); }
+.hintbox { background: var(--hint); border-radius: 12px; padding: 0.5rem 0.8rem; font-size: clamp(1.05rem, 2vw, 1.6rem); margin-top: 0.4rem; }
+.why { color: var(--answer); font-size: clamp(1.1rem, 2.2vw, 1.8rem); line-height: 1.3; margin-top: 0.6rem; }
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; align-content: start; }
+.pad .disp { grid-column: 1 / -1; font-size: clamp(2.6rem, 5vw, 4.4rem); font-weight: 700; text-align: center; background: var(--slot); border: 4px solid var(--edge); border-radius: 12px; min-height: 1.4em; font-variant-numeric: tabular-nums; }
+.pad button { font-size: clamp(1.4rem, 2.6vw, 2.2rem); font-weight: 700; padding: 0.4rem; }
+.pad .go { grid-column: 1 / -1; background: var(--title); color: var(--bg); border-color: var(--title); }
+.pfoot { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; }
+.pfoot .instr { flex: 1; }
+.pfoot button { font-weight: 700; font-size: clamp(1rem, 1.8vw, 1.4rem); }
+.hidden { display: none; }
+.win { position: fixed; inset: 0; background: var(--bg); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; z-index: 6; text-align: center; padding: 1rem; }
+.win.open { display: flex; }
+.win h2 { font-size: clamp(2.4rem, 6vw, 5rem); color: var(--open); margin: 0; font-weight: 700; }
+.win p { font-size: clamp(1.3rem, 2.8vw, 2.4rem); max-width: 34ch; margin: 0; line-height: 1.3; }
+@media (max-width: 860px) { main { grid-template-columns: repeat(2, 1fr); } .pbody { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: no-preference) { .lockcard.solved svg { animation: pop 0.35s ease-out; } @keyframes pop { 0% { transform: scale(0.8); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } } }
+</style>
+</head>
+<body>
+<header>
+  <img src="data:image/png;base64,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" alt="Starter icon">
+  <h1>Starter- Do Now</h1>
+  <div class="sub">Escape the Lab<span>Crack four locks to get the door code.</span></div>
+</header>
+<div class="vault">
+  <span class="lbl">Door code:</span>
+  <div class="slots" id="slots"><span>?</span><span>?</span><span>?</span><span>?</span></div>
+  <div class="clock" id="clockBox"><span class="t" id="ct">7:00</span><button id="cBtn">Start</button></div>
+</div>
+<main id="locks"></main>
+<div class="instr">Work out each answer on your mini-whiteboard. The class agrees on one digit to try.</div>
+<footer><button id="reset">Reset game</button><img src="data:image/png;base64,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" alt="School logo"></footer>
+
+<div class="p" id="p" role="dialog" aria-modal="true" aria-labelledby="pText">
+  <div class="phead"><span class="badge" id="pN"></span><span class="topic" id="pTopic"></span></div>
+  <div class="pbody">
+    <div>
+      <p class="ptext" id="pText"></p>
+      <div class="items" id="pItems"></div>
+      <div class="feedback" id="fb" aria-live="polite"></div>
+      <div class="hintbox hidden" id="hint"></div>
+      <div class="why hidden" id="why"></div>
+    </div>
+    <div class="pad" id="pad" aria-label="Keypad"></div>
+  </div>
+  <div class="pfoot">
+    <button id="hintBtn">Show hint</button>
+    <div class="instr" id="pInstr">Agree on one digit, then type it in.</div>
+    <button id="back">Back to the locks</button>
+  </div>
+</div>
+<div class="win" id="win" role="dialog" aria-modal="true" aria-labelledby="winH">
+  <h2 id="winH">Door unlocked!</h2>
+  <div class="slots" id="winSlots"></div>
+  <p>Ka pai! You used conduction, the named groups, element–compound–mixture and atom counting to escape.</p>
+  <button id="winClose" style="font-weight:700;font-size:1.4rem">Back to the locks</button>
+</div>
+<script>
+const LOCKS = [
+  { topic: 'Metals and conduction', q: 'How many of these conduct electric charge? Watch out for the exception.',
+    items: ['copper', 'sulfur', 'aluminium', 'oxygen', 'magnesium', 'graphite (carbon)'], a: 4,
+    hint: 'Metals generally conduct; non-metals generally do not. One non-metal on this list breaks the rule.',
+    why: '4: copper, aluminium and magnesium are metals and conduct. Graphite is a non-metal but conducts – the exception. Sulfur and oxygen do not conduct.' },
+  { topic: 'Named groups', q: 'Alkali metals are Group 1, halogens Group 17 and noble gases Group 18. Which group number are the alkaline earth metals?',
+    items: ['beryllium', 'magnesium', 'calcium'], a: 2,
+    hint: 'They are reactive metals, but less reactive than the alkali metals. Find magnesium on the periodic table.',
+    why: '2: the alkaline earth metals are Group 2. Group 1 alkali metals; Group 17 halogens; Group 18 noble gases.' },
+  { topic: 'Element, compound or mixture?', q: 'How many of these are compounds?',
+    items: ['O<sub>2</sub>', 'CO<sub>2</sub>', 'air', 'H<sub>2</sub>O', 'NH<sub>3</sub>', 'Ar'], a: 3,
+    hint: 'Ask two questions: how many types of atom? Are the different atoms bonded together?',
+    why: '3: CO<sub>2</sub>, H<sub>2</sub>O and NH<sub>3</sub> are compounds. O<sub>2</sub> and Ar are elements (one type of atom). Air is a mixture (substances not bonded to each other).' },
+  { topic: 'Count the atoms', q: 'How many atoms in total are in one particle of methanol, CH<sub>4</sub>O?',
+    items: ['CH<sub>4</sub>O'], a: 6,
+    hint: 'A subscript counts the atom just before it. No subscript means one.',
+    why: '6: C 1, H 4, O 1. 1 + 4 + 1 = 6 atoms.' },
+];
+const lockSVG = open => `<svg viewBox="0 0 100 110" aria-hidden="true"><path d="${open ? 'M28 48 V30 a22 22 0 0 1 44 0 V22' : 'M28 48 V30 a22 22 0 0 1 44 0 V48'}" fill="none" stroke="${open ? 'var(--open)' : 'var(--lock)'}" stroke-width="10" stroke-linecap="round"/><rect x="14" y="46" width="72" height="56" rx="10" fill="${open ? 'var(--open)' : 'var(--lock)'}"/><circle cx="50" cy="70" r="8" fill="var(--bg)"/><rect x="46" y="72" width="8" height="16" rx="3" fill="var(--bg)"/></svg>`;
+const state = LOCKS.map(() => ({ solved: false, tries: 0 }));
+let cur = null, entry = '';
+const $ = id => document.getElementById(id);
+function drawLocks() {
+  $('locks').innerHTML = '';
+  LOCKS.forEach((L, i) => { const b = document.createElement('button'); const st = state[i];
+    b.className = 'lockcard' + (st.solved ? ' solved' : '');
+    b.innerHTML = `${lockSVG(st.solved)}<span class="n">Lock ${i + 1}${st.solved ? ': ' + L.a : ''}</span><span class="topic">${L.topic}</span>`;
+    b.setAttribute('aria-label', `Lock ${i + 1}, ${L.topic}${st.solved ? ', solved' : ''}`);
+    b.onclick = () => openLock(i); $('locks').appendChild(b); });
+  [...$('slots').children].forEach((s, i) => { s.textContent = state[i].solved ? LOCKS[i].a : '?'; s.className = state[i].solved ? 'got' : ''; });
+}
+function drawPad() {
+  const pad = $('pad'); pad.innerHTML = `<div class="disp" id="disp">${entry || '–'}</div>`;
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 'Clear', 0, ''].forEach(k => { if (k === '') { pad.appendChild(document.createElement('span')); return; }
+    const b = document.createElement('button'); b.textContent = k; b.onclick = () => { if (k === 'Clear') entry = ''; else entry = String(k); $('disp').textContent = entry || '–'; }; pad.appendChild(b); });
+  const go = document.createElement('button'); go.className = 'go'; go.textContent = 'Try this digit'; go.onclick = tryIt; pad.appendChild(go);
+}
+function openLock(i) {
+  cur = i; entry = ''; const L = LOCKS[i], st = state[i];
+  $('pN').textContent = `Lock ${i + 1}`; $('pTopic').textContent = L.topic;
+  $('pText').innerHTML = L.q; $('pItems').innerHTML = L.items.map(t => `<span>${t}</span>`).join('');
+  $('fb').textContent = st.solved ? 'Unlocked!' : ''; $('fb').className = 'feedback' + (st.solved ? ' ok' : '');
+  $('hint').innerHTML = L.hint; $('hint').classList.add('hidden');
+  $('why').innerHTML = L.why; $('why').classList.toggle('hidden', !st.solved);
+  drawPad(); $('pad').classList.toggle('hidden', st.solved);
+  $('p').classList.add('open'); if (document.activeElement) document.activeElement.blur();
+}
+function tryIt() {
+  if (entry === '') return; const L = LOCKS[cur], st = state[cur];
+  if (Number(entry) === L.a) { st.solved = true; $('fb').textContent = `Unlocked! The digit is ${L.a}.`; $('fb').className = 'feedback ok'; $('why').classList.remove('hidden'); $('pad').classList.add('hidden'); }
+  else { st.tries++; $('fb').textContent = st.tries === 1 ? 'Not yet. Check your working and try again.' : 'Still locked. Read the hint and try again.'; $('fb').className = 'feedback no'; if (st.tries >= 2) $('hint').classList.remove('hidden'); entry = ''; $('disp').textContent = '–'; }
+}
+function closeLock() { $('p').classList.remove('open'); cur = null; drawLocks();
+  if (state.every(s => s.solved)) { $('winSlots').innerHTML = LOCKS.map(L => `<span class="got">${L.a}</span>`).join(''); $('win').classList.add('open'); clock.stop(); } }
+$('hintBtn').onclick = () => $('hint').classList.remove('hidden');
+$('back').onclick = closeLock;
+$('winClose').onclick = () => $('win').classList.remove('open');
+document.addEventListener('keydown', e => { if (cur === null) return;
+  if (/^[0-9]$/.test(e.key) && $('disp')) { entry = e.key; $('disp').textContent = entry; }
+  else if (e.key === 'Enter') { e.preventDefault(); if (!state[cur].solved) tryIt(); }
+  else if (e.key === 'Escape') closeLock(); });
+const clock = (() => { let left = 420, h = null; const box = $('clockBox'), out = $('ct'), btn = $('cBtn');
+  const draw = () => out.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+  const stop = () => { clearInterval(h); h = null; btn.textContent = left <= 0 ? 'Restart' : 'Start'; };
+  btn.onclick = () => { if (h) return stop(); if (left <= 0) { left = 420; box.classList.remove('done'); } btn.textContent = 'Pause';
+    h = setInterval(() => { left--; draw(); if (left <= 0) { stop(); box.classList.add('done'); } }, 1000); };
+  return { stop, reset() { stop(); left = 420; box.classList.remove('done'); draw(); } }; })();
+$('reset').onclick = () => { state.forEach(s => { s.solved = false; s.tries = 0; }); clock.reset(); $('win').classList.remove('open'); drawLocks(); };
+drawLocks();
+</script>
+</body>
+</html>
